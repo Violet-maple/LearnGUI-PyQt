@@ -11,10 +11,13 @@ from PyQt5.QtWidgets import (QWidget, QMainWindow, QGridLayout,
                              QDesktopWidget, QScrollBar)
 
 from MiddlePackages.BMain import ObjFactory
-from src.Config.setting import load_info
+from Config.setting import load_info
 
 
 class MainUi(QMainWindow):
+    clicked_num = 0
+    container = {}
+    
     def __init__(self, info):
         super(MainUi, self).__init__()
         self.icon = [ico for ico in info]
@@ -44,6 +47,9 @@ class MainUi(QMainWindow):
         self.slide.setMaximum(self.column)
         self.slide.setMinimum(self.num)
         self.slide.valueChanged.connect(self._value_change)
+        # 创建进度条
+        self.notice_btn = QPushButton("Analysis")
+        self.notice_btn.setFixedSize(150, 25)
         
         # 创建中侧部件
         self.mid_widget = QWidget()
@@ -60,8 +66,9 @@ class MainUi(QMainWindow):
         
         self.main_layout.addWidget(self.up_widget, 0, 0, 1, self.column)
         self.main_layout.addWidget(self.slide, 1, 0, 1, self.column)
-        self.main_layout.addWidget(self.mid_widget, 2, 2, 1, self.column-2)
-        self.main_layout.addWidget(self.down_widget, 3, self.column - 1, 1, 1)
+        self.main_layout.addWidget(self.notice_btn, 2, 0, 1, 1)
+        self.main_layout.addWidget(self.mid_widget, 3, 2, 1, self.column-2)
+        self.main_layout.addWidget(self.down_widget, 4, self.column - 1, 1, 1)
         self.setCentralWidget(self.main_widget)
         
         # 创建头部（head）
