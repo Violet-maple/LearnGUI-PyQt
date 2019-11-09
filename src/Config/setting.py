@@ -4,6 +4,7 @@ import os
 
 import yaml
 
+
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 filename = os.path.join(BASE_DIR, 'Config/mode.yaml')
 

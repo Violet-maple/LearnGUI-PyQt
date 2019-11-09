@@ -3,6 +3,7 @@
 
 from MiddlePackages.FirstModle import FirstMode
 from MiddlePackages.SecondModel import SecondMode
+from MiddlePackages.thirdModel import ThirdMode
 
 
 class ObjFactory:
@@ -10,10 +11,12 @@ class ObjFactory:
     
     @staticmethod
     def create(obj, model_name):
-        """创建员工"""
+        """创建对象"""
         mode = None
         if model_name == 'forward':
             mode = FirstMode(obj, model_name)
         elif model_name == 'sellsy':
             mode = SecondMode(obj, model_name)
-        return mode.run() if mode else None
+        elif model_name == 'film':
+            mode = ThirdMode(obj, model_name)
+        return mode

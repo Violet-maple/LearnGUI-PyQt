@@ -1,25 +1,26 @@
 #!/usr/bin/python3
 # -*- coding: utf-8 -*-
 
+
 import os
 import traceback
 from time import sleep
 
 import qtawesome
-from PyQt5.QtCore import QThread, pyqtSignal
+from PyQt5.QtCore import Qt, QThread, pyqtSignal
 from PyQt5.QtWidgets import QWidget, QGridLayout, QLabel, QLineEdit, QPushButton
 
 from Config.Style import set_first_mode_style
 from MiddlePackages.ABCclass import MiddleWidget, GetDataError
 
 
-class FirstMode(MiddleWidget):
+class ThirdMode(MiddleWidget):
     def __init__(self, obj, name):
         super().__init__(obj, name)
         self._thread = None
         self._name = name
         self._obj = obj
-        # self.row = 10
+        self.row = 2
         self.set_up()
     
     def set_up(self):
@@ -43,8 +44,9 @@ class FirstMode(MiddleWidget):
             self.middle_layout.addWidget(middle_input, i, 1, 1, self.row - 1)
             self.middle_layout.addWidget(middle_btn, i, self.row, 1, 1)
         
+        self.middle_layout.setAlignment(Qt.AlignTop)
         self._obj.mid_layout.addWidget(middle_widget, 0, 0, 1, 1)
-        # 设置样式
+        
         set_first_mode_style(middle_widget)
         return True
     
@@ -57,12 +59,12 @@ class FirstMode(MiddleWidget):
             if not input_val:
                 continue
             elif not os.path.exists(input_val):
+                print("file path error")
                 return
             else:
                 self.data[keys[i]] = input_val
-        
         return True
-        
+    
     def set_widget_enable(self, flag=False):
         # 禁止btn等
         if flag:
@@ -71,7 +73,7 @@ class FirstMode(MiddleWidget):
             self._obj.tail_btn.setEnabled(True)
         for widget in (self.middle_layout.itemAt(i).widget() for i in range(self.children) if i % 3):
             widget.setDisabled(flag)
-
+    
     def run(self):
         if not self.get_data():
             raise GetDataError("获取页面路径错误")
@@ -83,10 +85,11 @@ class FirstMode(MiddleWidget):
         except:
             self.set_widget_enable()
             traceback.print_exc()
-
+    
     def create_thread_run(self):
         self._thread = MyThread()
-        self._thread.sig.connect(self.set_progress)
+        self._thread.sig_str.connect(self.set_progress)
+        self._thread.sig_int.connect(self.set_progress)
         # self._thread.get_data(self.data)
         self._thread.get_obj(self)
         # 线程启动时禁止button和重置进度条
@@ -96,25 +99,35 @@ class FirstMode(MiddleWidget):
 
 
 class MyThread(QThread):
-    sig = pyqtSignal(int)
+    sig_str = pyqtSignal(str)
+    sig_int = pyqtSignal(int)
     
     def __init__(self, parent=None):
         super(MyThread, self).__init__(parent)
-        self._data = None
         self._obj = None
-    
-    def get_data(self, data):
-        self._data = data
-    
+
     def get_obj(self, obj):
         self._obj = obj
     
+    def success(self):
+        self.sig_int.emit(100)
+    
+    def set_process(self, value):
+        self.sig_int.emit(value)
+    
+    def log_info(self, value):
+        self.sig_str.emit(value)
+        
     def run(self):
         print("Thread_result: %s" % self._obj.data)
         try:
-            for step in range(100):
-                sleep(0.1)
-                self.sig.emit(step + 1)
+            for i in range(1, 100):
+                if not (i % 5):
+                    self.log_info(f"string_{i}")
+                    continue
+                sleep(1)
+                self.set_process(i)
+            self.success()
         except:
             self._obj.set_widget_enable()
             traceback.print_exc()
