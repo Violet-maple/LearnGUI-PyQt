@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 from MiddlePackages.FirstModle import FirstMode
+from MiddlePackages.FourthModel import FourthMode
 from MiddlePackages.SecondModel import SecondMode
 from MiddlePackages.thirdModel import ThirdMode
 
@@ -19,4 +20,6 @@ class ObjFactory:
             mode = SecondMode(obj, model_name)
         elif model_name == 'film':
             mode = ThirdMode(obj, model_name)
+        elif model_name == "home":
+            mode = FourthMode(obj, model_name)
         return mode

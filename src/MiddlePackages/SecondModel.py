@@ -9,7 +9,7 @@ import qtawesome
 from PyQt5.QtCore import QThread, pyqtSignal
 from PyQt5.QtWidgets import QWidget, QGridLayout, QLabel, QLineEdit, QPushButton
 
-from Config.Style import set_first_mode_style
+from utils.Style import set_first_mode_style
 from MiddlePackages.ABCclass import MiddleWidget, GetDataError
 
 
@@ -17,8 +17,8 @@ class SecondMode(MiddleWidget):
     def __init__(self, obj, name):
         super().__init__(obj, name)
         self._thread = None
-        self._name = name
         self._obj = obj
+        self.name = name
         self.row = 10
         self.set_up()
     
@@ -87,7 +87,8 @@ class SecondMode(MiddleWidget):
             
     def create_thread_run(self):
         self._thread = MyThread()
-        self._thread.sig.connect(self.set_progress)
+        self._thread.sig_str.connect(self.output_log_info)
+        self._thread.sig_int.connect(self.set_progress)
         # self._thread.get_data(self.data)
         self._thread.get_obj(self)
         # 线程启动时禁止button和重置进度条
@@ -97,25 +98,33 @@ class SecondMode(MiddleWidget):
 
 
 class MyThread(QThread):
-    sig = pyqtSignal(int)
+    sig_int = pyqtSignal(int)
+    sig_str = pyqtSignal(str)
     
     def __init__(self, parent=None):
         super(MyThread, self).__init__(parent)
-        self._data = None
         self._obj = None
-    
-    def get_data(self, data):
-        self._data = data
     
     def get_obj(self, obj):
         self._obj = obj
+
+    def success(self):
+        self.sig_int.emit(100)
+        self.sig_str.emit(f"《{self._obj.name}》：解析完成。。。")
+
+    def set_process(self, value):
+        self.sig_int.emit(value)
+
+    def log_info(self, value):
+        self.sig_str.emit(value)
     
     def run(self):
         print("Thread_result: %s" % self._obj.data)
         try:
             for step in range(1, 101):
                 sleep(0.1)
-                self.sig.emit(step)
+                self.set_process(step)
+            self.success()
         except:
             self._obj.set_widget_enable()
             traceback.print_exc()

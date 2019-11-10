@@ -9,7 +9,7 @@ import qtawesome
 from PyQt5.QtCore import Qt, QThread, pyqtSignal
 from PyQt5.QtWidgets import QWidget, QGridLayout, QLabel, QLineEdit, QPushButton
 
-from Config.Style import set_first_mode_style
+from utils.Style import set_first_mode_style
 from MiddlePackages.ABCclass import MiddleWidget, GetDataError
 
 

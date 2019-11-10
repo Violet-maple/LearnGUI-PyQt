@@ -1,13 +1,9 @@
 #!/usr/bin/python3
 # -*- coding: utf-8 -*-
 
+from PyQt5.QtWidgets import QTextEdit
 
-import qtawesome
-from PyQt5.QtCore import Qt
-from PyQt5.QtWidgets import QWidget, QGridLayout, QLabel, QLineEdit, QPushButton, QTextEdit
-
-from Config.Style import set_first_mode_style
-from MiddlePackages.ABCclass import MiddleWidget, GetDataError
+from MiddlePackages.ABCclass import MiddleWidget
 
 
 class Analysis(MiddleWidget):
@@ -15,8 +11,8 @@ class Analysis(MiddleWidget):
         super().__init__(obj, name)
         self.middle_text = None
         self._thread = None
-        self._name = name
         self._obj = obj
+        self.name = name
         self.set_up()
     
     def set_up(self):
@@ -29,8 +25,12 @@ class Analysis(MiddleWidget):
     
     def set_value(self, value):
         self.middle_text.append(value)
-
+    
     def get_value(self):
+        """
+        获取所有日志信息
+        :return: 日志
+        """
         return self.middle_text.toPlainText()
     
     def get_data(self):

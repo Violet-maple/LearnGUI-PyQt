@@ -11,10 +11,11 @@ from PyQt5.QtWidgets import (QWidget, QMainWindow, QGridLayout,
                              QPushButton, QToolButton, QApplication,
                              QDesktopWidget, QScrollBar, QProgressBar, QLabel)
 
-from Config.Style import set_mid_widget_background_style, set_ico_style, set_notice_style, set_style
+from utils import const
+from utils.Style import set_mid_widget_background_style, set_ico_style, set_notice_style, set_style
 from MiddlePackages.AnalysisModle import Analysis
 from MiddlePackages.BMain import ObjFactory
-from Config.setting import load_info
+from utils.setting import load_info
 from main import QTitleButton, QTitleLabel
 
 
@@ -45,10 +46,11 @@ class MainUi(QMainWindow):
         self.up_widget.setFixedHeight(80)
         self.up_layout = QGridLayout()
         self.up_widget.setLayout(self.up_layout)
+        
         # 创建滚动条
         self.slide = QScrollBar(True)
         self.slide.setObjectName('slide_roll_bar')
-        self.slide.setFixedHeight(8)
+        self.slide.setFixedHeight(const.SLIDE_HEIGHT)
         self.slide.setMaximum(self.column)
         self.slide.setMinimum(self.num)
         self.slide.valueChanged.connect(self._value_change)
@@ -58,7 +60,7 @@ class MainUi(QMainWindow):
         self.notice_btn = QPushButton(name)
         self.notice_btn.setObjectName(name)
         self.container["selectedNoticeName"] = name
-        self.notice_btn.setFixedSize(150, 25)
+        self.notice_btn.setFixedSize(const.NOTICE_WIDTH, const.BTN_HEIGHT)
         self.notice_btn.clicked.connect(self._clicked)
         
         # 创建中侧部件
@@ -78,8 +80,8 @@ class MainUi(QMainWindow):
         self.main_layout.addWidget(self.up_widget, 0, 0, 1, self.column)
         self.main_layout.addWidget(self.slide, 1, 0, 1, self.column)
         self.main_layout.addWidget(self.notice_btn, 2, 0, 1, 1)
-        self.main_layout.addWidget(self.mid_widget, 3, 1, 1, self.column-1)
-        self.main_layout.addWidget(self.down_widget, 4, self.column-1, 1, 1)
+        self.main_layout.addWidget(self.mid_widget, 3, 1, 1, self.column - 1)
+        self.main_layout.addWidget(self.down_widget, 4, self.column - 1, 1, 1)
         self.setCentralWidget(self.main_widget)
         
         # 生成analysis
@@ -99,7 +101,7 @@ class MainUi(QMainWindow):
         # 创建尾部 按钮
         self.tail_btn = QPushButton("Execute")
         self.tail_btn.setObjectName('execute')
-        self.tail_btn.setFixedSize(80, 25)
+        self.tail_btn.setFixedSize(const.TAIL_HEIGHT, const.BTN_HEIGHT)
         self.tail_btn.clicked.connect(self.run)
         
         self.down_layout.addWidget(self.tail_btn, 0, 0, 0, 0)
@@ -108,14 +110,14 @@ class MainUi(QMainWindow):
         self.progressBar = QProgressBar()
         label = QLabel()
         label.setText("运行进度：")
-
+        
         self.statusBar().addPermanentWidget(label)
         self.statusBar().addPermanentWidget(self.progressBar)
         self.progressBar.setAlignment(Qt.AlignLeft)
-        self.progressBar.setMaximum(100)
-        self.progressBar.setValue(0)
-  
-        self.main_layout.setSpacing(0)
+        self.progressBar.setMaximum(const.HUNDRED)
+        self.progressBar.setValue(const.ZERO)
+        
+        self.main_layout.setSpacing(const.ZERO)
         
         set_style(self)
         # self.setWindowFlag(Qt.FramelessWindowHint)  # 隐藏边框
@@ -134,16 +136,17 @@ class MainUi(QMainWindow):
         except:
             self.set_progress()
             traceback.print_exc()
-           
+    
     def set_progress(self):
         self.tail_btn.setEnabled(True)
+    
     # def flush(self):
     #     while self.progressBar.text() != "100%":
     #         QApplication.processEvents()
     #         sleep(0.1)
     #     self.tail_btn.setEnabled(True)
     #     print("flush over")
-            
+    
     def load_model_ico(self, start, end):
         for i in range(start, end):
             self.tool_btn = QToolButton()
@@ -151,21 +154,21 @@ class MainUi(QMainWindow):
             self.tool_btn.setObjectName(f"{self.icon[i]}")  # 设置按钮文本
             self.tool_btn.setFixedSize(85, 52)
             self.tool_btn.setIcon(qtawesome.icon(f'fa.{self.icon[i]}', color='white'))  # 设置按钮图标
-            self.tool_btn.setIconSize(QSize(35, 35))  # 设置图标大小
+            self.tool_btn.setIconSize(QSize(const.ICO_SIZE, const.ICO_SIZE))  # 设置图标大小
             self.tool_btn.setToolButtonStyle(Qt.ToolButtonTextUnderIcon)
             self.tool_btn.clicked.connect(self._clicked)
-        
+            
             self.head_layout.addWidget(self.tool_btn, 0, i, 1, 1)
     
     def info_btn(self, name):
         notice_btn = QPushButton(name)
         notice_btn.setObjectName(f"{name}_{self.obj_num}")
-        notice_btn.setFixedSize(150, 25)
+        notice_btn.setFixedSize(const.NOTICE_WIDTH, const.BTN_HEIGHT)
         self.container[name]["noticeName"] = f"{name}_{self.obj_num}"
         notice_btn.clicked.connect(self._clicked)
         
         self.main_layout.addWidget(notice_btn, 2, self.obj_num, 1, 1)
-        
+    
     def _clicked(self):
         model_name = self.sender().text()
         if model_name == self.container.get("selectedModelName"):
@@ -192,7 +195,7 @@ class MainUi(QMainWindow):
             self.info_btn(model_name)
         self.show_widget(model_name)
         self.show()
-        
+    
     @staticmethod
     def del_layout(layout):
         for i in range(layout.count()):
@@ -216,7 +219,7 @@ class MainUi(QMainWindow):
         self.container["selectedModelName"] = curr_mode_name
         print(f"当前Container：{self.container}")
         print(f"当前选中模块：{curr_mode_name}")
-        
+    
     def show_notice_widget(self, model_name):
         curr_notice_name = self.container.get(model_name, {}).get("noticeName", "failed-model")
         args = []
@@ -229,7 +232,7 @@ class MainUi(QMainWindow):
                 args.append(item.get("noticeName"))
         args.append(curr_notice_name)
         set_notice_style(self.main_widget, tuple(args))
-
+        
         self.container["selectedNoticeName"] = curr_notice_name
     
     def _value_change(self):
@@ -253,7 +256,7 @@ class MainUi(QMainWindow):
         size = self.geometry()
         self.move((screen.width() - size.width()) / 2,
                   (screen.height() - size.height()) / 2)
-
+    
     # #**************************************************** ##
     # #**************************************************** ##
     # #**************************************************** ##
@@ -269,7 +272,7 @@ class MainUi(QMainWindow):
             self._CloseButton.clicked.connect(self.close)  # 按钮信号连接到关闭窗口的槽函数
             self.up_layout.addWidget(self._CloseButton, 0, self.column, 0, 0)
             self.up_layout.setAlignment(Qt.AlignAbsolute)
-
+    
     def setMinMaxButtons(self, bool):
         # 给widget定义一个setMinMaxButtons函数，为True时设置一组最小化最大化按钮
         if bool == True:
@@ -285,7 +288,7 @@ class MainUi(QMainWindow):
             self._MaximumButton.setMouseTracking(True)  # 设置按钮鼠标跟踪（如不设，则按钮在widget上层，无法实现跟踪）
             self._MaximumButton.setFixedHeight(2)  # 设置按钮高度为标题栏高度
             self._MaximumButton.clicked.connect(self._changeNormalButton)  # 按钮信号连接切换到恢复窗口大小按钮函数
-
+    
     def _changeNormalButton(self):
         # 切换到恢复窗口大小按钮
         try:
@@ -296,7 +299,7 @@ class MainUi(QMainWindow):
             self._MaximumButton.clicked.connect(self._changeMaxButton)  # 重新连接信号和槽
         except:
             pass
-
+    
     def _changeMaxButton(self):
         # 切换到最大化按钮
         try:
@@ -315,6 +318,7 @@ class MainUi(QMainWindow):
         self._TitleLabel.setIndent(2)  # 设置标题栏文本缩进
         # self._TitleLabel.move(580, 580)  # 标题栏安放到左上角
         self.main_layout.addWidget(self._TitleLabel, 0, self.column, 1, 1)
+
 
 def main():
     app = QApplication(sys.argv)

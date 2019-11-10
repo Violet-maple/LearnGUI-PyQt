@@ -1,25 +1,27 @@
 #!/usr/bin/python3
 # -*- coding: utf-8 -*-
-
-
+import logging
 import os
 import traceback
 from time import sleep
 
-import qtawesome
-from PyQt5.QtCore import Qt, QThread, pyqtSignal
-from PyQt5.QtWidgets import QWidget, QGridLayout, QLabel, QLineEdit, QPushButton
+from utils import const
 
-from Config.Style import set_first_mode_style
+import qtawesome
+from PyQt5.QtCore import Qt, QThread, pyqtSignal, QDate
+from PyQt5.QtWidgets import QWidget, QGridLayout, QLabel, QLineEdit, QPushButton, QCalendarWidget
+
+from utils.Style import set_first_mode_style
 from MiddlePackages.ABCclass import MiddleWidget, GetDataError
+from utils.setting import load_log_config
 
 
 class ThirdMode(MiddleWidget):
     def __init__(self, obj, name):
         super().__init__(obj, name)
         self._thread = None
-        self._name = name
         self._obj = obj
+        self.name = name
         self.row = 2
         self.set_up()
     
@@ -52,6 +54,7 @@ class ThirdMode(MiddleWidget):
     
     def get_data(self):
         self.children = self.middle_layout.count()
+        print(self.children)
         keys = [self.middle_layout.itemAt(i).widget().text() for i in range(self.children) if not (i % 3)]
         values = [self.middle_layout.itemAt(i).widget().text() for i in range(self.children) if i % 3 == 1]
         for i in range(self.children // 3):
@@ -88,13 +91,15 @@ class ThirdMode(MiddleWidget):
     
     def create_thread_run(self):
         self._thread = MyThread()
-        self._thread.sig_str.connect(self.set_progress)
+        self._thread.sig_str.connect(self.output_log_info)
         self._thread.sig_int.connect(self.set_progress)
         # self._thread.get_data(self.data)
         self._thread.get_obj(self)
         # 线程启动时禁止button和重置进度条
         # 运行后控件禁止再点击
         self.set_widget_enable(True)
+        # 加载日志配置路径
+        load_log_config(self.name)
         self._thread.start()
 
 
@@ -105,19 +110,23 @@ class MyThread(QThread):
     def __init__(self, parent=None):
         super(MyThread, self).__init__(parent)
         self._obj = None
-
+    
     def get_obj(self, obj):
         self._obj = obj
     
     def success(self):
-        self.sig_int.emit(100)
+        msg = f"《{self._obj.name}》_解析完成..."
+        self.sig_int.emit(const.HUNDRED)
+        self.sig_str.emit(msg)
+        logging.info(msg)
     
     def set_process(self, value):
         self.sig_int.emit(value)
     
     def log_info(self, value):
         self.sig_str.emit(value)
-        
+        logging.info(value)
+    
     def run(self):
         print("Thread_result: %s" % self._obj.data)
         try:
