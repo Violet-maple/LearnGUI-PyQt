@@ -24,12 +24,12 @@ class _Const(object):
         raise NameError(name)
 
 
-constant = _Const()
-sys.modules[__name__] = constant
+sys.modules[__name__] = constant = _Const()
+
 # 增加常量
 # constant.PI = 3.14
 constant.SLIDE_HEIGHT = 8
-constant.NOTICE_WIDTH = 150
+constant.NOTICE_WIDTH = 120
 constant.BTN_HEIGHT = 25
 constant.TAIL_HEIGHT = 80
 constant.HUNDRED = 100

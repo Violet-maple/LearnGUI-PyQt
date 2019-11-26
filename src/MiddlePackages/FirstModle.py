@@ -6,7 +6,7 @@ import traceback
 from time import sleep
 
 import qtawesome
-from PyQt5.QtCore import QThread, pyqtSignal
+from PyQt5.QtCore import QThread, pyqtSignal, Qt
 from PyQt5.QtWidgets import QWidget, QGridLayout, QLabel, QLineEdit, QPushButton
 
 from utils.Style import set_first_mode_style
@@ -19,17 +19,15 @@ class FirstMode(MiddleWidget):
         self._thread = None
         self._obj = obj
         self.name = name
-        # self.row = 10
         self.set_up()
     
     def set_up(self):
         middle_widget = QWidget()
         self.middle_layout = QGridLayout()
         middle_widget.setLayout(self.middle_layout)
-        for i in range(self.row):
+        for i in range(5):
             middle_icon = QLabel(chr(0xf002) + f'目录_{i}:')
             middle_icon.setFont(qtawesome.font('fa', 12))
-            middle_icon.setFixedSize(50, self.height)
             middle_input = QLineEdit()
             middle_input.setFixedHeight(self.height)
             middle_input.setObjectName(f'middle_input_{i}')
@@ -40,9 +38,9 @@ class FirstMode(MiddleWidget):
             middle_btn.clicked.connect(lambda: self.open_file(middle_widget))
             
             self.middle_layout.addWidget(middle_icon, i, 0, 1, 1)
-            self.middle_layout.addWidget(middle_input, i, 1, 1, self.row - 1)
-            self.middle_layout.addWidget(middle_btn, i, self.row, 1, 1)
-        
+            self.middle_layout.addWidget(middle_input, i, 1, 1, 1)
+            self.middle_layout.addWidget(middle_btn, i, 2, 1, 1)
+        self.middle_layout.setAlignment(Qt.AlignTop | Qt.AlignCenter)
         self._obj.mid_layout.addWidget(middle_widget, 0, 0, 1, 1)
         # 设置样式
         set_first_mode_style(middle_widget)

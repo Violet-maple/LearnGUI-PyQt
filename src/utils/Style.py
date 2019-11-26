@@ -61,8 +61,8 @@ def set_notice_style(widget, args):
     notice_btn_css = """#slide_roll_bar{border: none;}QScrollBar::handle:horizontal
                         {background:darkGray;}QScrollBar:horizontal{background: #009CAB;}
                      """
-    css_white = """#%s{border:1px solid grey;background:white;text-align:left;}"""
-    css = """#%s{border:1px solid grey;background:#006CAB;text-align:left;}""" * num + css_white + notice_btn_css
+    css_white = "#%s{border:1px solid grey;background:white;text-align:left;}"
+    css = "#%s{border:1px solid grey;background:#006CAB;text-align:left;}" * num + css_white + notice_btn_css
     widget.setStyleSheet(css % args)
 
 

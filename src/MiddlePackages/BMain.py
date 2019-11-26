@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 # -*- coding: utf-8 -*-
-
+from MiddlePackages.FifthModel import FiveModel
 from MiddlePackages.FirstModle import FirstMode
 from MiddlePackages.FourthModel import FourthMode
 from MiddlePackages.SecondModel import SecondMode
@@ -22,4 +22,6 @@ class ObjFactory:
             mode = ThirdMode(obj, model_name)
         elif model_name == "home":
             mode = FourthMode(obj, model_name)
+        elif model_name == "download":
+            mode = FiveModel(obj, model_name)
         return mode

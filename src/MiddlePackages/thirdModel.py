@@ -43,8 +43,8 @@ class ThirdMode(MiddleWidget):
             middle_btn.clicked.connect(lambda: self.open_file(middle_widget))
             
             self.middle_layout.addWidget(middle_icon, i, 0, 1, 1)
-            self.middle_layout.addWidget(middle_input, i, 1, 1, self.row - 1)
-            self.middle_layout.addWidget(middle_btn, i, self.row, 1, 1)
+            self.middle_layout.addWidget(middle_input, i, 1, 1, 1)
+            self.middle_layout.addWidget(middle_btn, i, 2, 1, 1)
         
         self.middle_layout.setAlignment(Qt.AlignTop)
         self._obj.mid_layout.addWidget(middle_widget, 0, 0, 1, 1)
@@ -137,6 +137,6 @@ class MyThread(QThread):
                 sleep(1)
                 self.set_process(i)
             self.success()
-        except:
+        except Exception as e:
             self._obj.set_widget_enable()
             traceback.print_exc()

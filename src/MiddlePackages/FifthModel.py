@@ -9,11 +9,12 @@ import qtawesome
 from PyQt5.QtCore import Qt, QThread, pyqtSignal
 from PyQt5.QtWidgets import QWidget, QGridLayout, QLabel, QLineEdit, QPushButton
 
+from MiddlePackages.peiqi import turtle_pei_qi
 from utils.Style import set_first_mode_style
 from MiddlePackages.ABCclass import MiddleWidget, GetDataError
 
 
-class ThirdMode(MiddleWidget):
+class FiveModel(MiddleWidget):
     def __init__(self, obj, name):
         super().__init__(obj, name)
         self._thread = None
@@ -76,9 +77,9 @@ class ThirdMode(MiddleWidget):
     def run(self):
         if not self.get_data():
             raise GetDataError("获取页面路径错误")
-        if not self.data:
-            print("界面参数不能为空")
-            return
+        # if not self.data:
+        #     print("界面参数不能为空")
+        #     return
         try:
             self.create_thread_run()
         except:
@@ -113,11 +114,10 @@ class MyThread(QThread):
     def run(self):
         print("Thread_result: %s" % self._obj.data)
         try:
-            for step in range(1, 100):
-                if step == 10:
-                    self.sledklasdl()
-                sleep(1)
-                self.sig.emit(step)
+            turtle_pei_qi()
+        except RuntimeError as e:
+            print(e)
         except:
-            self._obj.set_widget_enable()
             traceback.print_exc()
+        finally:
+            self._obj.set_widget_enable()

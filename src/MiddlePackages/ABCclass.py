@@ -18,7 +18,6 @@ class GetDataError(Exception):
 
 class MiddleWidget(metaclass=ABCMeta):
     """(抽象类)"""
-    row = 5
     height = const.BTN_HEIGHT
     
     def __init__(self, obj, name):
