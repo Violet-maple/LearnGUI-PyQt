@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" href="{% static 'layui/css/layui.css' %}">
+</head>
+
+<script src="/static/layui/layui.js"></script>
+<body>
+
+<script type="text/html" id="btn-toolbar">
+
+    <div class="demoTable">
+    搜索ID：
+    <div class="layui-inline">
+        <input class="layui-input" name="keyword" id="demoReload" autocomplete="off">
+    </div>
+    <button class="layui-btn" data-type="reload">搜索</button>
+</div>
+</script>
+
+<script type="text/html" id="switchTpl">
+    <input type="checkbox" name="sex" value="{{ d.sex }}" lay-skin="switch" lay-text="男|女 " lay-filter="sexDemo" {%verbatim %}{{ d.sex== true ? 'checked' : '' }}{% endverbatim %}>
+</script>
+<table class="layui-hide" id="test" lay-filter="test"></table>
+
+<script type="text/html" id="operate-bar">
+    <a class="layui-btn layui-btn-primary layui-btn-xs" lay-event="detail">查看</a>
+    <a class="layui-btn layui-btn-xs" lay-event="edit">编辑</a>
+    <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
+</script>
+
+<script>
+    layui.use('table', function () {
+        var table = layui.table, $ = layui.jquery, layer = layui.layer;
+
+        table.render({
+            elem: '#test',
+            url: '/hrs/data/api',
+            toolbar: 'default',
+            defaultToolbar: [
+                {
+                    title: '条件过滤', //标题
+                    layEvent: 'searchDiv', //事件名，用于 toolbar 事件中使用
+                    icon: 'layui-icon-search' //图标类名
+                },
+                'filter',
+                'print',
+                'exports'
+            ],
+            cols: [[
+                {type: 'checkbox', fixed: 'left'},
+                {field: 'no', width: 120, title: 'ID', sort: true},
+                {field: 'name', width: 120, title: '用户名', hide: true},
+                {field: 'sex', width: 120, title: '性别', templet: '#switchTpl', unresize: true},
+                {field: 'job', width: 120, title: '职称'},
+                {field: 'mgr', width: 120, title: '管理'},
+                {field: 'sal', width: 120, title: '月薪'},
+                {field: 'comm', width: 120, title: '补助'},
+                {field: 'dept', width: 120, title: '部门'},
+                {field: 'right', width: 200, title: '操作', toolbar: '#operate-bar'},
+            ]],
+            limits: [5, 10, 20],
+            limit: 5,
+            page: true,
+        });
+        table.on('tool(test)', function(obj){
+            var data = obj.data, layEvent = obj.event;
+            if(layEvent === 'detail'){
+                layer.msg(JSON.stringify(data));
+            } else if(layEvent === 'del'){
+                layer.confirm('真的删除行么', function(index){
+                    obj.del(); //删除对应行（tr）的DOM结构
+                    layer.close(index);
+                    //向服务端发送删除指令
+                });
+            } else if(layEvent === 'edit'){
+                layer.msg('编辑操作');
+            }
+        });
+
+        $('.layui-btn').click(function () {
+            var inputVal = $('.layui-input').val();
+            table.reload('test', {
+                url: 'https://www.easy-mock.com/mock/5c131015dada7b27ac3a5c36/titi/noData',
+                methods: "post",
+                request: {
+                    pageName: 'page', //页码的参数名称，默认：page
+                    limitName: 'limit', // pageSize 每页数据量的参数名，默认：limit
+                },
+                where: {
+                    query: inputVal
+                },
+                page: {
+                    curr: 1
+                }
+            });
+        });
+    });
+</script>
+
+</body>
+</html>
